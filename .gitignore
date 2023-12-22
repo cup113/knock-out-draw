@@ -1,0 +1,6 @@
+/node_modules
+*.xlsx
+/students.txt
+
+# Local Netlify folder
+.netlify
