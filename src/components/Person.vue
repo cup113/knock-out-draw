@@ -19,7 +19,7 @@ const store = useStore();
 }
 
 .person {
-    font-size: calc(var(--size) * 1px);
+    font-size: calc(var(--size) * 1px) !important;
     width: 8em;
     overflow: hidden;
     transition: background-color 300ms ease-in-out, width 500ms ease-in-out;

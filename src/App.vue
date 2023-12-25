@@ -26,7 +26,7 @@ const dialog = ref(true);
           <v-container></v-container>
           <v-textarea v-model="store.nameList" label="抽奖名单（每行一个）" rows="12"></v-textarea>
           <div>
-            <p>备注/版权声明</p>
+            <p>关于我们</p>
             <p>
               <a
                 href="https://www.freepik.com/search?format=search&last_filter=type&last_value=icon&query=lucky%20draw&type=icon" target="_blank">Favicon
