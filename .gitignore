@@ -2,6 +2,7 @@
 *.xlsx
 /students.txt
 /dist
+/knock-out-draw-electron
 
 # Local Netlify folder
 .netlify

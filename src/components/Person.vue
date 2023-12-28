@@ -10,7 +10,7 @@ const store = useStore();
 
 <template>
     <v-chip class="person h-auto" :class="{ selected: person.selected }"
-        :style="{'--size': store.fontSize }" text-center>{{ person.name }}</v-chip>
+        :style="{'--size': store.fontSize }"><div>{{ person.name }}</div></v-chip>
 </template>
 
 <style scoped>
@@ -20,9 +20,13 @@ const store = useStore();
 
 .person {
     font-size: calc(var(--size) * 1px) !important;
-    width: 8em;
     overflow: hidden;
     transition: background-color 300ms ease-in-out, width 500ms ease-in-out;
     background-color: white;
+}
+
+.person>div {
+    width: 8em;
+    text-align: center;
 }
 </style>

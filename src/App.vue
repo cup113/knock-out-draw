@@ -23,7 +23,6 @@ const dialog = ref(true);
         <v-card class="px-8 py-4">
           <template #title>设置</template>
           <template #subtitle>点击设置框外任意点退出</template>
-          <v-container></v-container>
           <v-textarea v-model="store.nameList" label="抽奖名单（每行一个）" rows="12"></v-textarea>
           <div>
             <p>关于我们</p>
