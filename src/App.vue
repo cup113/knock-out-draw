@@ -1,46 +1,47 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { VBtn } from 'vuetify/components/VBtn';
+import { VExpansionPanels, VExpansionPanel } from 'vuetify/components';
+
 import useStore from './store/index';
 import Person from './components/Person.vue';
-import { VTextarea } from 'vuetify/components/VTextarea';
-import { VBtn } from 'vuetify/components/VBtn';
-import { VDialog } from 'vuetify/components/VDialog'
-import { VCard } from 'vuetify/components/VCard';
-import { ref } from 'vue';
-import { mdiCog } from '@mdi/js/mdi';
+
+import Settings from './components/Settings.vue';
 
 const store = useStore();
-const dialog = ref(true);
+
+const countWon = computed(() => store.people.filter(p => p.won).length);
+const reductionPath = computed(() => {
+  let remaining = store.people.filter(people => !people.won).length;
+  const result = [remaining];
+  while (remaining > store.settings.sampleSize) {
+    remaining = Math.max(Math.floor(remaining * store.settings.filterRate), store.settings.sampleSize);
+    result.push(remaining);
+  }
+  return result.join("→");
+});
 </script>
 
 <template>
   <div class="pa-4">
-    <div>
-      <v-dialog v-model="dialog">
-        <template #activator="{ props }">
-          <v-btn v-bind="props" :icon="mdiCog" class="bg-green">
-          </v-btn>
-        </template>
-        <v-card class="px-8 py-4">
-          <template #title>设置</template>
-          <template #subtitle>点击设置框外任意点退出</template>
-          <v-textarea v-model="store.nameList" label="抽奖名单（每行一个）" rows="12"></v-textarea>
-          <div>
-            <p>关于我们</p>
-            <p>
-              <a
-                href="https://www.freepik.com/search?format=search&last_filter=type&last_value=icon&query=lucky%20draw&type=icon" target="_blank">Favicon
-                by Freepik</a>
-            </p>
-            <p><a href="https://github.com/cup113/knock-out-draw" target="_blank">Source Code</a></p>
-          </div>
-        </v-card>
-      </v-dialog>
+    <div class="d-flex" style="gap: 2rem; align-items: center;">
+      <Settings></Settings>
+      <v-text-field label="标题" style="min-width: 300px;"></v-text-field>
+      <v-expansion-panels style="max-width: 40rem;">
+        <v-expansion-panel title="详细信息">
+          <template #text>
+            <div>已得奖人数：{{ countWon }} / {{ store.names.length }} 人</div>
+            <div>抽奖人数路径：{{ reductionPath }}</div>
+          </template>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </div>
     <div class="text-center">
       <v-btn @click="store.start()" class="bg-cyan-lighten-2" size="x-large">抽奖</v-btn>
     </div>
     <div class="d-flex flex-wrap mt-4 justify-center">
-      <Person v-for="person in store.peopleShowed" :key="person.name" :person="person" class="ma-1 text-center"></Person>
+      <Person v-for="person in store.peopleShowed" :key="person.name" :person="person" class="ma-1 text-center">
+      </Person>
     </div>
   </div>
 </template>

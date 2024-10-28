@@ -15,15 +15,23 @@ export class Person {
     }
 }
 
+export const DEFAULT_NAME_LIST = "张三\n李四\n王五"
+
 const useStore = defineStore('index', () => {
-    const nameList = useLocalStorage('KD_nameList', "");
+    const nameList = useLocalStorage('KD_nameList', DEFAULT_NAME_LIST);
+    const settings = useLocalStorage('KD_settings', {
+        sampleSize: 1,
+        filterRate: 0.25,
+        fontSizeMultiplier: 1.8,
+        nameWidth: 10,
+    });
     const names = computed({
         get() {
-            return nameList.value.trimEnd().split('\n');
+            return nameList.value.split('\n').map(name => name.trim()).filter(name => name.length > 0);
         },
         set(value) {
             nameList.value = value.join('\n');
-            people.value = names.value.map(name => new Person(name))
+            people.value = names.value.map(name => new Person(name));
         }
     });
     const people = ref(names.value.map(name => new Person(name)));
@@ -35,10 +43,10 @@ const useStore = defineStore('index', () => {
         fontSize.value = 16;
         peopleShowed.value = people.value.filter(person => !person.won);
         let round = 0;
-        while (peopleShowed.value.length > 1) {
+        while (peopleShowed.value.length > settings.value.sampleSize) {
             round++;
             await new Promise(resolve => setTimeout(resolve, 1500));
-            const target = Math.max(1, Math.floor(peopleShowed.value.length / 4));
+            const target = Math.max(1, Math.floor(peopleShowed.value.length * settings.value.filterRate));
             for (let i = 0; i < round * round + 2; i++) {
                 const selection = new Set(
                     sampler.sample(peopleShowed.value, target)
@@ -51,14 +59,18 @@ const useStore = defineStore('index', () => {
             await new Promise(resolve => setTimeout(resolve, 1000));
             peopleShowed.value = peopleShowed.value.filter(person => person.selected);
             peopleShowed.value.forEach(person => person.selected = false);
-            fontSize.value *= 1.5;
+            fontSize.value = Math.round(fontSize.value * settings.value.fontSizeMultiplier);
         }
-        peopleShowed.value[0].won = true;
-        peopleShowed.value[0].selected = true;
+        peopleShowed.value.forEach(person => {
+            person.won = true;
+            person.selected = true;
+        });
     }
 
     return {
         nameList,
+        names,
+        settings,
         people,
         peopleShowed,
         fontSize,
